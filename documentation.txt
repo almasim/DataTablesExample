@@ -1,0 +1,269 @@
+
+                                Basic Start
+------------------------------------[]------------------------------------
+php -r "copy('https://getcomposer.org/installer', 'composer-setup.php');" 
+For the composer
+
+composer create-project laravel/laravel DataTables
+Created the base app
+
+php artisan serve 
+Start it
+
+Made the local host database:
+datatablesproj
+
+Made connections in the .env file 
+------------------------------------[]------------------------------------
+
+
+
+                        Filling Up the Database
+------------------------------------()------------------------------------
+wanted to instal breeze 
+composer require laravel/breeze --dev
+npm install 
+npm run dev
+
+didnt worked like it suppoused to but atleast it made the migration files i edited those then 
+//edit it workes i just forgot to install it lmao
+    php artisan breeze:install
+    php artisan migrate
+    npm install
+    npm run dev
+
+php artisan migrate
+
+made a seeder by 
+php artisan make:seeder UserSeeder
+
+Made a for loop with 1000 loops with random names passwords emails and numbers
+php artisan seeder UserSeeder
+------------------------------------()------------------------------------
+
+
+
+    ALL of this isn't related to the actual work
+------------------------{}------------------------------
+i configured to be able to log in 
+gave default value to the role 
+app/Http/Controllers/Auth/RegisterUserController.blade.php
+See comments for additional info
+
+and made a new input for age int he register blade 
+resources/view/auth/register.balde.php
+See the age comment block
+------------------------{}------------------------------
+
+
+                            DataTables Install
+------------------------------------[]------------------------------------
+Install laravel Datatables to the composer:
+composer require yajra/laravel-datatables-oracle:"^10.0"
+
+Insert this line to the app.php to the providers section:
+config/app.php
+ctrl+f: providers
+after the last line:
+Yajra\DataTables\DataTablesServiceProvider::class,
+
+Publish it right after:
+php artisan vendor:publish --tag=datatables
+
+its stupidly easy all you have to do is to insert the these links to the main blade 
+
+<script src="https://code.jquery.com/jquery-3.3.1.slim.min.js" integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo" crossorigin="anonymous"></script>
+<script src="https://cdn.jsdelivr.net/npm/popper.js@1.14.7/dist/umd/popper.min.js" integrity="sha384-UO2eT0CpHqdSJQ6hJty5KVphtPhzWj9WO1clHTMGa3JDZwrnQq4sF86dIHNDz0W1" crossorigin="anonymous"></script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@4.3.1/dist/js/bootstrap.min.js" integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM" crossorigin="anonymous"></script>
+<link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/1.13.1/css/jquery.dataTables.css">
+
+<script type="text/javascript" charset="utf8" src="https://cdn.datatables.net/1.13.1/js/jquery.dataTables.js"></script>
+
+basicly just jquery bootstrap popper and the datatable script & stylesheet
+------------------------------------[]------------------------------------
+
+
+                     Prepare your data for the Table
+------------------------------------[]------------------------------------
+                        'Be aware lot of Examples'
+
+
+I made a button to my index page with a route :
+<div class="row">
+        <a href="{{ route('user.alluser') }}" class="btn btn-info sm" title="Edit Data"> Click here </a>    ///All User Table button
+</div><!-- end row -->
+
+
+Made a UserController (I already have a UserModel bcs of the breeze):
+php artisan make:controller UserController
+
+Made a simple get route in web.php :
+Route::controller(UserController::class)->group(function () {
+    Route::get('/user/all', 'AllUsers')->name('user.alluser');
+});
+
+
+Did the function in the Controller:
+public function AllUsers(){
+    $users=User::latest()->get(); //get all users
+    return view('logged.table_all',compact('users')); //return to another page with all of the users
+}
+
+I made a blade file in the logged folder as the return view says ->
+
+------------------------------------[]------------------------------------
+
+
+                            The actual Table
+------------------------------------[]------------------------------------
+                         'Still lot of Examples'
+-> ill skip the wraping divs and shits
+
+A basic table's code is:
+
+<table id="datatable" class="table table-bordered dt-responsive nowrap" style="border-collapse: collapse; border-spacing: 0; width: 100%;">
+
+    <thead>
+    <tr>
+        <th width="20%">Id</th>
+        <th>User Name</th>
+        <th width="20%">Email</th>
+        <th width="20%">Age</th>
+        <th width="20%">Role</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    @foreach ($users as $key => $item)  ///With a loop we go trough all of the data and write it out 1 by 1
+        <tr>
+            <td>{{$key++}}</td>
+            <td>{{$item->name}}</td>
+            <td>{{$item->email}}</td>
+            <td>{{$item->age}}</td>
+            <td>{{$item->role}}</td>
+
+        </tr>
+    @endforeach
+
+    </tbody>
+</table>
+
+
+You can make complex headers like this:
+<thead>
+    <tr>
+        <th rowspan="2">Name</th>
+        <th colspan="2">HR Information</th>
+        <th colspan="3">Contact</th>
+    </tr>
+    <tr>
+        <th>Position</th>
+        <th>Salary</th>
+        <th>Office</th>
+        <th>Extn.</th>
+        <th>E-mail</th>
+    </tr>
+</thead>
+
+
+
+------------------------------------[]------------------------------------
+
+                            Scripts for Table
+------------------------------------[]------------------------------------
+The base datatables script is:
+<script>
+    $(document).ready(function () {
+    $('#datatable').DataTable({
+                                                <---I
+    });                                             I
+});                                                 I
+</script>                                           I
+                                                    I
+if you want pagination you just have to put there:  I
+pagingType: 'full_numbers',
+pagination types:
+'numbers' Page number buttons only
+'simple' Only Previous and next Buttons
+'simple_numbers' both of them 
+'full' first Previous next last buttons
+'full_numbers' the lastone and numbers
+'first_last_numbers' should be clear
+
+
+
+Order by Something:
+$a = is the index of column starting with 0
+(please insert a number not a variable there its just for clearance same with the desc/asc only one of them (order: [[3, 'desc']],) ):
+order: [[{a}, {desc/asc} ]],
+
+
+you can group the ordering if you want to order by more columns
+
+columnDefs: [
+        {
+            targets: [0],         
+            orderData: [0, 1],
+        },
+        {
+            targets: [1],
+            orderData: [1, 0],
+        },
+        {
+            targets: [4],
+            orderData: [4, 0],
+        },
+    ],
+
+
+if you want to display multiple tables name them the same id:
+$('table.display').DataTable();
+
+
+Hiding columns same as the ordering target is the column index
+the rest is clear
+
+columnDefs: [
+            {
+                target: 2,
+                visible: false,
+                searchable: false,
+            },
+            {
+                target: 3,
+                visible: false,
+            },
+
+if you want to flip move or do something with the pagination search or something within the datatable script items search up 
+DOM Positioning on the datatable website
+
+Resizing like any normal table css:
+<table style='width:100%> 
+
+You can cache the ordering and paging state by it stores it in the localStorage and sessionStorage:
+stateSave: true,
+
+The duration is saved in seconds if you want 24h it looks like this:
+stateDuration:60*60*24 
+
+for stateSaveCallback and stateLoadCallback go to this site:
+https://datatables.net/examples/basic_init/state_save.html
+
+data rendering for picture, progressbar:
+https://datatables.net/examples/basic_init/data_rendering.html
+
+If you want scrollable table turn off paging:
+    scrollY: '200px',  ///'50vh'
+    scrollCollapse: true,
+    paging: false,
+
+You can enable the horizontal scrolling with:
+    scrollX: true,
+You can Use both at the same time
+
+
+For decimal separators:
+        language: {
+            decimal: ',',
+            thousands: '.',
+        }, 
